@@ -32,10 +32,10 @@
     let broken = [];
     try {
       const mosaic = document.getElementById("mosaic");
-      const elements = mosaic.children;
+      const elements = mosaic?.children || [];
       for (let index = 1; index < elements.length; index++) {
         const element = elements[index];
-        const image = element.children[0].children[0];
+        const image = element.children[0].children[0] as HTMLImageElement;
         if (image.naturalWidth === 0) {
           broken.push({ id: element.id, image });
         }
