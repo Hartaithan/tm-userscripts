@@ -9,20 +9,23 @@
 // @grant        none
 // ==/UserScript==
 
+const messages = {
+  "no-elements": "unable to find messages list element",
+  "no-element": "unable to find message list element",
+};
+
 const getMessagesList = () => {
   const elements = window.document.getElementsByTagName("tbody");
-  if (elements.length === 0) {
-    throw Error("unable to find messages list element");
-  }
-  if (!elements[5]) {
-    throw Error("unable to find message list element");
-  }
-  return elements[5];
+  if (elements.length === 0) throw Error(messages["no-elements"]);
+  if (!elements[4]) throw Error(messages["no-element"]);
+  return elements[4];
 };
 
 (function () {
   "use strict";
 
-  const list = getMessagesList();
-  console.info("list", list);
+  window.addEventListener("load", () => {
+    const list = getMessagesList();
+    console.info("list", list);
+  });
 })();
