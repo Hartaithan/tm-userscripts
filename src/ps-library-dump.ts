@@ -17,15 +17,45 @@ const messages = {
 const getMessagesList = () => {
   const elements = window.document.getElementsByTagName("tbody");
   if (elements.length === 0) throw Error(messages["no-elements"]);
-  if (!elements[4]) throw Error(messages["no-element"]);
-  return elements[4];
+  const list = elements[4];
+  if (!list) throw Error(messages["no-element"]);
+  return list;
+};
+
+const start = () => {
+  const list = getMessagesList();
+  console.info("list", list);
 };
 
 (function () {
   "use strict";
 
   window.addEventListener("load", () => {
-    const list = getMessagesList();
-    console.info("list", list);
+    button.textContent = "Start";
+    button.disabled = false;
+    button.style.backgroundColor = "#121212";
+    button.style.cursor = "pointer";
+    button.onclick = start;
   });
+
+  const button = document.createElement("button");
+  button.textContent = "Loading...";
+  button.disabled = true;
+
+  Object.assign(button.style, {
+    position: "absolute",
+    bottom: "64px",
+    left: "24px",
+    padding: "8px 16px",
+    fontSize: "14px",
+    backgroundColor: "#6c757d",
+    color: "#fff",
+    border: "none",
+    borderRadius: "5px",
+    cursor: "not-allowed",
+    zIndex: "1000",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+  });
+
+  document.body.appendChild(button);
 })();
