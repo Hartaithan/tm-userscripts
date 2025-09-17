@@ -17,7 +17,14 @@ const messages = {
 const getMessagesList = () => {
   const elements = window.document.getElementsByTagName("tbody");
   if (elements.length === 0) throw Error(messages["no-elements"]);
-  const list = elements[4];
+  let list: HTMLTableSectionElement | null = null;
+  for (const element of elements) {
+    const hasChildren = element.children.length > 1;
+    const hasContent = element.outerText.length > 0;
+    if (!hasChildren || !hasContent) continue;
+    list = element;
+    break;
+  }
   if (!list) throw Error(messages["no-element"]);
   return list;
 };
