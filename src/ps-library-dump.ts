@@ -9,13 +9,37 @@
 // @grant        none
 // ==/UserScript==
 
+interface ResultItem {
+  title: string;
+  price: number;
+}
+
+const result: ResultItem[] = [];
+
 const messages = {
   "no-elements": "unable to find messages list element",
   "no-element": "unable to find message list element",
+  "empty-list": "unable to find elements in list",
+  "no-click": "element doesn't have click handler",
+};
+
+const wait = (sec: number): Promise<void> => {
+  return new Promise((resolve) => {
+    setTimeout(resolve, sec * 1000);
+  });
+};
+
+const clickElement = (element: Element) => {
+  const isHTMLElement = element instanceof HTMLElement;
+  if (isHTMLElement && typeof element.click === "function") {
+    element.click();
+  } else {
+    console.error(messages["no-click"]);
+  }
 };
 
 const getMessagesList = () => {
-  const elements = window.document.getElementsByTagName("tbody");
+  const elements = document.getElementsByTagName("tbody");
   if (elements.length === 0) throw Error(messages["no-elements"]);
   let list: HTMLTableSectionElement | null = null;
   for (const element of elements) {
@@ -29,9 +53,40 @@ const getMessagesList = () => {
   return list;
 };
 
+const getAllReadableTables = () => {
+  const result: HTMLTableElement[] = [];
+  const tables = document.getElementsByTagName("table");
+  for (const table of tables) {
+    if (!table.outerText.includes("Сведения")) continue;
+    result.push(table);
+  }
+  return result;
+};
+
+const readContent = () => {
+  const tables = getAllReadableTables();
+  console.log("tables", tables);
+};
+
+const processListItem = async (item: Element, idx: number) => {
+  console.info(`starting to process ${idx} element on a page`);
+  clickElement(item);
+  await wait(1);
+  readContent();
+};
+
+const parseList = async (list: HTMLTableSectionElement) => {
+  if (list.children.length === 0) throw Error(messages["empty-list"]);
+  for (let idx = 0; idx < list.children.length; idx++) {
+    const item = list.children[idx];
+    await processListItem(item, idx);
+    break;
+  }
+};
+
 const start = () => {
   const list = getMessagesList();
-  console.info("list", list);
+  parseList(list);
 };
 
 (function () {
