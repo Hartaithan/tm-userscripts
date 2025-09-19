@@ -53,19 +53,30 @@ const getMessagesList = () => {
   return list;
 };
 
-const getAllReadableTables = () => {
-  const result: HTMLTableElement[] = [];
-  const tables = document.getElementsByTagName("table");
-  for (const table of tables) {
-    if (!table.outerText.includes("Сведения")) continue;
-    result.push(table);
+const getAllReadableTableHeaders = () => {
+  const result: HTMLTableCellElement[] = [];
+  const headers = document.getElementsByTagName("th");
+  for (const header of headers) {
+    if (!header.outerText.includes("Сведения")) continue;
+    result.push(header);
+  }
+  return result;
+};
+
+const getReadableRows = (headers: HTMLTableCellElement[]): HTMLElement[] => {
+  const result: HTMLElement[] = [];
+  for (const header of headers) {
+    const body = header?.parentElement?.parentElement || null;
+    if (!body) continue;
+    result.push(body);
   }
   return result;
 };
 
 const readContent = () => {
-  const tables = getAllReadableTables();
-  console.log("tables", tables);
+  const headers = getAllReadableTableHeaders();
+  const rows = getReadableRows(headers);
+  console.log("rows", rows);
 };
 
 const processListItem = async (item: Element, idx: number) => {
