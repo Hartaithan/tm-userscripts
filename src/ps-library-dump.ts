@@ -11,7 +11,7 @@
 
 interface ResultItem {
   title: string;
-  price: number;
+  price: string;
 }
 
 const result: ResultItem[] = [];
@@ -40,47 +40,63 @@ const clickElement = (element: Element) => {
 
 const getMessagesList = () => {
   const elements = document.getElementsByTagName("tbody");
-  if (elements.length === 0) throw Error(messages["no-elements"]);
+  if (elements.length === 0) {
+    console.info("elements", elements);
+    throw Error(messages["no-elements"]);
+  }
   let list: HTMLTableSectionElement | null = null;
   for (const element of elements) {
-    const hasChildren = element.children.length > 1;
+    const hasChildren = element.children.length >= 1;
     const hasContent = element.outerText.length > 0;
     if (!hasChildren || !hasContent) continue;
     list = element;
     break;
   }
-  if (!list) throw Error(messages["no-element"]);
+  if (!list) {
+    console.info("list", list);
+    throw Error(messages["no-element"]);
+  }
   return list;
 };
 
 const getAllReadableTableHeaders = () => {
-  const result: HTMLTableCellElement[] = [];
-  const headers = document.getElementsByTagName("th");
-  for (const header of headers) {
-    if (!header.outerText.includes("Сведения")) continue;
-    result.push(header);
+  const headers: HTMLTableCellElement[] = [];
+  const elements = document.getElementsByTagName("th");
+  for (const element of elements) {
+    if (!element.outerText.includes("Сведения")) continue;
+    headers.push(element);
   }
-  return result;
+  return headers;
 };
 
 const getReadableRows = (headers: HTMLTableCellElement[]): HTMLElement[] => {
-  const result: HTMLElement[] = [];
+  const rows: HTMLElement[] = [];
   for (const header of headers) {
     const body = header?.parentElement?.parentElement || null;
     if (!body) continue;
-    result.push(body);
+    rows.push(body);
   }
-  return result;
+  return rows;
 };
 
 const readContent = () => {
   const headers = getAllReadableTableHeaders();
   const rows = getReadableRows(headers);
-  console.log("rows", rows);
+
+  for (let index = 0; index < rows.length; index++) {
+    const row = rows[index];
+    if (index === 0) continue;
+    const title = row?.children?.[0].textContent || "Not Found";
+    const price = row?.children?.[1].textContent || "Not Found";
+    result.push({
+      title,
+      price,
+    });
+  }
 };
 
 const processListItem = async (item: Element, idx: number) => {
-  console.info(`starting to process ${idx} element on a page`);
+  console.info(`starting to process ${idx} element on a page`, item);
   clickElement(item);
   await wait(1);
   readContent();
