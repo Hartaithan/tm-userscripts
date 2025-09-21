@@ -85,13 +85,16 @@ const readContent = () => {
 
   for (let index = 0; index < rows.length; index++) {
     const row = rows[index];
-    if (index === 0) continue;
-    const title = row?.children?.[0].textContent || "Not Found";
-    const price = row?.children?.[1].textContent || "Not Found";
-    result.push({
-      title,
-      price,
-    });
+    const children = row?.children;
+    for (let idx = 0; idx < children.length; idx++) {
+      const child = children[idx].children;
+      const length = child.length || 0;
+      if (idx === 0 || length === 0) continue;
+      const title = child?.[0].textContent.trim() || "Not Found";
+      const price = child?.[length - 1].textContent.trim() || "Not Found";
+      result.push({ title, price });
+      console.log("result", result);
+    }
   }
 };
 
