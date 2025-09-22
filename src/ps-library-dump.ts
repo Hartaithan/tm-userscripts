@@ -98,19 +98,21 @@ const readContent = () => {
   }
 };
 
-const processListItem = async (item: Element, idx: number) => {
-  console.info(`starting to process ${idx} element on a page`, item);
+const processListItem = async (item: Element, idx: number, total: number) => {
+  console.info(`starting to process ${idx}/${total} element on a page`, item);
   clickElement(item);
-  await wait(1);
+  await wait(2);
   readContent();
+  window.history.back();
+  await wait(2);
 };
 
 const parseList = async (list: HTMLTableSectionElement) => {
-  if (list.children.length === 0) throw Error(messages["empty-list"]);
-  for (let idx = 0; idx < list.children.length; idx++) {
+  const total = list.children.length;
+  if (total === 0) throw Error(messages["empty-list"]);
+  for (let idx = 0; idx < total; idx++) {
     const item = list.children[idx];
-    await processListItem(item, idx);
-    break;
+    await processListItem(item, idx, total);
   }
 };
 
